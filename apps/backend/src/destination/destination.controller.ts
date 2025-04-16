@@ -15,10 +15,26 @@ export class DestinationController {
   }
 
   async getDestinationById(req: Request, res: Response) {
-    const { id } = req.params;
+    const { slug } = req.params;
 
     try {
-      const destination = await prisma.destination.findUnique({ where: { id: Number(id) } });
+      const destination = await prisma.destination.findUnique({ where: { slug } });
+
+      if (!destination) {
+        return res.status(404).json(formatResponse('error', 'Destination not found'));
+      }
+
+      res.status(200).json(formatResponse('success', 'Destination fetched successfully', destination));
+    } catch (error) {
+      res.status(500).json(formatResponse('error', 'Error fetching destination', error));
+    }
+  }
+
+  async getDestinationBySlug(req: Request, res: Response) {
+    const { slug } = req.params;
+
+    try {
+      const destination = await prisma.destination.findUnique({ where: { slug } });
 
       if (!destination) {
         return res.status(404).json(formatResponse('error', 'Destination not found'));
