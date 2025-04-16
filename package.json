@@ -1,0 +1,16 @@
+{
+  "name": "copa-tourism-website",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "start:backend": "node apps/backend/src/index.js",
+    "start:frontend": "serve -s apps/frontend/src"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "serve": "^11.3.2"
+  }
+}

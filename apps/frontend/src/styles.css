@@ -1,0 +1,12 @@
+body {
+    background-color: #f0f0f0; /* P755b */
+    font-family: Arial, sans-serif; /* Pc35a */
+    margin: 0; /* Pc35a */
+    padding: 0; /* Pc35a */
+}
+
+h1 {
+    color: #333; /* Pcefe */
+    text-align: center; /* Pcefe */
+    margin-top: 50px; /* Pcefe */
+}
