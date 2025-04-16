@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { formatResponse } from '../utils/responseFormat';
 
 const prisma = new PrismaClient();
 
@@ -7,9 +8,9 @@ export class DestinationController {
   async getAllDestinations(req: Request, res: Response) {
     try {
       const destinations = await prisma.destination.findMany();
-      res.status(200).json(destinations);
+      res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching destinations', error });
+      res.status(500).json(formatResponse('error', 'Error fetching destinations', error));
     }
   }
 
@@ -20,12 +21,12 @@ export class DestinationController {
       const destination = await prisma.destination.findUnique({ where: { id: Number(id) } });
 
       if (!destination) {
-        return res.status(404).json({ message: 'Destination not found' });
+        return res.status(404).json(formatResponse('error', 'Destination not found'));
       }
 
-      res.status(200).json(destination);
+      res.status(200).json(formatResponse('success', 'Destination fetched successfully', destination));
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching destination', error });
+      res.status(500).json(formatResponse('error', 'Error fetching destination', error));
     }
   }
 
@@ -42,9 +43,9 @@ export class DestinationController {
         },
       });
 
-      res.status(201).json({ message: 'Destination created successfully', destination });
+      res.status(201).json(formatResponse('success', 'Destination created successfully', destination));
     } catch (error) {
-      res.status(500).json({ message: 'Error creating destination', error });
+      res.status(500).json(formatResponse('error', 'Error creating destination', error));
     }
   }
 
@@ -62,9 +63,9 @@ export class DestinationController {
         },
       });
 
-      res.status(200).json({ message: 'Destination updated successfully', destination });
+      res.status(200).json(formatResponse('success', 'Destination updated successfully', destination));
     } catch (error) {
-      res.status(500).json({ message: 'Error updating destination', error });
+      res.status(500).json(formatResponse('error', 'Error updating destination', error));
     }
   }
 
@@ -73,9 +74,9 @@ export class DestinationController {
 
     try {
       await prisma.destination.delete({ where: { id: Number(id) } });
-      res.status(200).json({ message: 'Destination deleted successfully' });
+      res.status(200).json(formatResponse('success', 'Destination deleted successfully'));
     } catch (error) {
-      res.status(500).json({ message: 'Error deleting destination', error });
+      res.status(500).json(formatResponse('error', 'Error deleting destination', error));
     }
   }
 }

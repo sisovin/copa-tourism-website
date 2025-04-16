@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { formatResponse } from '../utils/responseFormat';
 
 const prisma = new PrismaClient();
 
@@ -7,9 +8,9 @@ export class PackageController {
   async getAllPackages(req: Request, res: Response) {
     try {
       const packages = await prisma.package.findMany();
-      res.status(200).json(packages);
+      res.status(200).json(formatResponse('success', 'Packages fetched successfully', packages));
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching packages', error });
+      res.status(500).json(formatResponse('error', 'Error fetching packages', error));
     }
   }
 
@@ -20,12 +21,12 @@ export class PackageController {
       const package = await prisma.package.findUnique({ where: { id: Number(id) } });
 
       if (!package) {
-        return res.status(404).json({ message: 'Package not found' });
+        return res.status(404).json(formatResponse('error', 'Package not found'));
       }
 
-      res.status(200).json(package);
+      res.status(200).json(formatResponse('success', 'Package fetched successfully', package));
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching package', error });
+      res.status(500).json(formatResponse('error', 'Error fetching package', error));
     }
   }
 
@@ -42,9 +43,9 @@ export class PackageController {
         },
       });
 
-      res.status(201).json({ message: 'Package created successfully', package });
+      res.status(201).json(formatResponse('success', 'Package created successfully', package));
     } catch (error) {
-      res.status(500).json({ message: 'Error creating package', error });
+      res.status(500).json(formatResponse('error', 'Error creating package', error));
     }
   }
 
@@ -63,9 +64,9 @@ export class PackageController {
         },
       });
 
-      res.status(200).json({ message: 'Package updated successfully', package });
+      res.status(200).json(formatResponse('success', 'Package updated successfully', package));
     } catch (error) {
-      res.status(500).json({ message: 'Error updating package', error });
+      res.status(500).json(formatResponse('error', 'Error updating package', error));
     }
   }
 
@@ -74,9 +75,9 @@ export class PackageController {
 
     try {
       await prisma.package.delete({ where: { id: Number(id) } });
-      res.status(200).json({ message: 'Package deleted successfully' });
+      res.status(200).json(formatResponse('success', 'Package deleted successfully'));
     } catch (error) {
-      res.status(500).json({ message: 'Error deleting package', error });
+      res.status(500).json(formatResponse('error', 'Error deleting package', error));
     }
   }
 }
