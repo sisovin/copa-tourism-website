@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import { signToken, verifyToken } from '../utils/jwt';
+import { formatResponse } from '../utils/responseFormat';
 
 const prisma = new PrismaClient();
 
@@ -18,9 +19,9 @@ export class AuthController {
         },
       });
 
-      res.status(201).json({ message: 'User registered successfully', user });
+      res.status(201).json(formatResponse('success', 'User registered successfully', user));
     } catch (error) {
-      res.status(500).json({ message: 'Error registering user', error });
+      res.status(500).json(formatResponse('error', 'Error registering user', error));
     }
   }
 
@@ -31,20 +32,20 @@ export class AuthController {
       const user = await prisma.user.findUnique({ where: { email } });
 
       if (!user || !(await argon2.verify(user.password, password))) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(401).json(formatResponse('error', 'Invalid email or password'));
       }
 
-      const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
-      const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      const accessToken = signToken({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+      const refreshToken = signToken({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
       await prisma.user.update({
         where: { id: user.id },
         data: { refreshToken },
       });
 
-      res.status(200).json({ accessToken, refreshToken });
+      res.status(200).json(formatResponse('success', 'Login successful', { accessToken, refreshToken }));
     } catch (error) {
-      res.status(500).json({ message: 'Error logging in', error });
+      res.status(500).json(formatResponse('error', 'Error logging in', error));
     }
   }
 
@@ -57,9 +58,9 @@ export class AuthController {
         data: { refreshToken: null },
       });
 
-      res.status(200).json({ message: 'User logged out successfully' });
+      res.status(200).json(formatResponse('success', 'User logged out successfully'));
     } catch (error) {
-      res.status(500).json({ message: 'Error logging out', error });
+      res.status(500).json(formatResponse('error', 'Error logging out', error));
     }
   }
 }

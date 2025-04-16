@@ -7,6 +7,7 @@ import { authMiddleware } from './auth/auth.middleware';
 import blogRoutes from './blog/blog.routes';
 import destinationRoutes from './destination/destination.routes';
 import packageRoutes from './package/package.routes';
+import errorHandler from './middleware/errorHandler';
 
 const app = express();
 
@@ -23,5 +24,7 @@ app.use('/packages', packageRoutes);
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
+
+app.use(errorHandler);
 
 export default app;
