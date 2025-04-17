@@ -6,9 +6,28 @@ const RegisterForm = ({ onRegisterSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!validateEmail(email)) {
+      setError('Invalid email address');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
 
     try {
       await register(email, password);
@@ -28,6 +47,7 @@ const RegisterForm = ({ onRegisterSuccess }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="p-2 border border-gray-300 rounded"
         />
       </div>
       <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5 xl:gap-6">
@@ -38,10 +58,11 @@ const RegisterForm = ({ onRegisterSuccess }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          className="p-2 border border-gray-300 rounded"
         />
       </div>
-      {error && <p>{error}</p>}
-      <button type="submit">Register</button>
+      {error && <p className="text-red-500">{error}</p>}
+      <button type="submit" className="p-2 bg-blue-500 text-white rounded">Register</button>
     </form>
   );
 };
