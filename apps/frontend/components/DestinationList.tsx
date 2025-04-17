@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import DestinationCard from './DestinationCard';
 import LoadingSkeleton from './LoadingSkeleton';
 import ToastNotification from './ToastNotification';
+import { Container, Grid, Title } from '@copa/ui';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -29,8 +30,8 @@ const DestinationList = () => {
   const totalPages = Math.ceil(destinations.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Destinations</h1>
+    <Container>
+      <Title level={1} className="text-2xl font-bold mb-4">Destinations</Title>
       <input
         type="text"
         placeholder="Search destinations..."
@@ -38,11 +39,11 @@ const DestinationList = () => {
         onChange={handleSearchInputChange}
         className="mb-4 p-2 border border-gray-300 rounded"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
         {currentDestinations.map((destination) => (
           <DestinationCard key={destination.id} name={destination.name} description={destination.description} location={destination.location} imageUrl={destination.imageUrl} />
         ))}
-      </div>
+      </Grid>
       <div className="flex justify-center mt-4">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -54,7 +55,7 @@ const DestinationList = () => {
           </button>
         ))}
       </div>
-    </div>
+    </Container>
   );
 };
 

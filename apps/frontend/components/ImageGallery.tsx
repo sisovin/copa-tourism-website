@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ImageGallery as CopaImageGallery } from '@copa/ui';
 
 const ImageGallery = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,11 +14,7 @@ const ImageGallery = ({ images }) => {
 
   return (
     <div className="image-gallery flex flex-col items-center">
-      <img src={images[currentIndex]} alt={`Image ${currentIndex + 1}`} className="w-full h-auto object-cover rounded-lg" />
-      <div className="flex justify-between w-full mt-4">
-        <button onClick={handlePrev} className="p-2 bg-blue-500 text-white rounded">Previous</button>
-        <button onClick={handleNext} className="p-2 bg-blue-500 text-white rounded">Next</button>
-      </div>
+      <CopaImageGallery images={images} currentIndex={currentIndex} handleNext={handleNext} handlePrev={handlePrev} />
     </div>
   );
 };
