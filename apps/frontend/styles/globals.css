@@ -52,3 +52,104 @@ a:hover {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* Responsive styles */
+@media (min-width: 640px) {
+  body {
+    font-size: 1rem;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+
+  .loading-skeleton {
+    gap: 16px;
+  }
+
+  .toast-notification {
+    padding: 24px;
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 1.125rem;
+  }
+
+  a {
+    font-size: 1.125rem;
+  }
+
+  .loading-skeleton {
+    gap: 24px;
+  }
+
+  .toast-notification {
+    padding: 32px;
+    bottom: 32px;
+    right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 1.25rem;
+  }
+
+  a {
+    font-size: 1.25rem;
+  }
+
+  .loading-skeleton {
+    gap: 32px;
+  }
+
+  .toast-notification {
+    padding: 40px;
+    bottom: 40px;
+    right: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  body {
+    font-size: 1.375rem;
+  }
+
+  a {
+    font-size: 1.375rem;
+  }
+
+  .loading-skeleton {
+    gap: 40px;
+  }
+
+  .toast-notification {
+    padding: 48px;
+    bottom: 48px;
+    right: 48px;
+  }
+}
+
+@media (min-width: 1536px) {
+  body {
+    font-size: 1.5rem;
+  }
+
+  a {
+    font-size: 1.5rem;
+  }
+
+  .loading-skeleton {
+    gap: 48px;
+  }
+
+  .toast-notification {
+    padding: 56px;
+    bottom: 56px;
+    right: 56px;
+  }
+}

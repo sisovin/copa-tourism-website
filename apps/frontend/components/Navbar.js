@@ -2,8 +2,8 @@ import React from 'react';
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-800 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="bg-gray-800 text-white p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12">
+      <div className="container mx-auto flex justify-between items-center flex-col sm:flex-row">
         <div className="logo">
           <h1 className="text-2xl font-bold">Copa Tourism</h1>
         </div>
