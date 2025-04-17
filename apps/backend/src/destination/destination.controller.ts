@@ -95,4 +95,24 @@ export class DestinationController {
       res.status(500).json(formatResponse('error', 'Error deleting destination', error));
     }
   }
+
+  async searchDestinations(req: Request, res: Response) {
+    const { query } = req.query;
+
+    try {
+      const destinations = await prisma.destination.findMany({
+        where: {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            { location: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+      });
+
+      res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
+    } catch (error) {
+      res.status(500).json(formatResponse('error', 'Error fetching destinations', error));
+    }
+  }
 }

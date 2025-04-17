@@ -80,4 +80,23 @@ export class PackageController {
       res.status(500).json(formatResponse('error', 'Error deleting package', error));
     }
   }
+
+  async searchPackages(req: Request, res: Response) {
+    const { query } = req.query;
+
+    try {
+      const packages = await prisma.package.findMany({
+        where: {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+      });
+
+      res.status(200).json(formatResponse('success', 'Packages fetched successfully', packages));
+    } catch (error) {
+      res.status(500).json(formatResponse('error', 'Error fetching packages', error));
+    }
+  }
 }

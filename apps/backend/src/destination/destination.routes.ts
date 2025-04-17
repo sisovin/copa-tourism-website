@@ -9,5 +9,6 @@ router.get('/destinations/:slug', destinationController.getDestinationBySlug);
 router.post('/destinations', destinationController.createDestination);
 router.put('/destinations/:id', destinationController.updateDestination);
 router.delete('/destinations/:id', destinationController.deleteDestination);
+router.get('/destinations/search', destinationController.searchDestinations);
 
 export default router;

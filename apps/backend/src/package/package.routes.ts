@@ -9,5 +9,6 @@ router.get('/packages/:id', packageController.getPackageById);
 router.post('/packages', packageController.createPackage);
 router.put('/packages/:id', packageController.updatePackage);
 router.delete('/packages/:id', packageController.deletePackage);
+router.get('/packages/search', packageController.searchPackages);
 
 export default router;
