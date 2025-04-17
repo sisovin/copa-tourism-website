@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules": true,
+    "**/.git": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
