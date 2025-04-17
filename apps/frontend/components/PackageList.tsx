@@ -1,14 +1,16 @@
 import React from 'react';
 import useSWR from 'swr';
 import PackageCard from './PackageCard';
+import LoadingSkeleton from './LoadingSkeleton';
+import ToastNotification from './ToastNotification';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const PackageList = () => {
   const { data: packages, error } = useSWR('/packages', fetcher);
 
-  if (error) return <div>Error fetching packages</div>;
-  if (!packages) return <div>Loading...</div>;
+  if (error) return <ToastNotification message="Error fetching packages" />;
+  if (!packages) return <LoadingSkeleton />;
 
   return (
     <div className="container mx-auto p-4">

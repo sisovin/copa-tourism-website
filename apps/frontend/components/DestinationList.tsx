@@ -1,14 +1,16 @@
 import React from 'react';
 import useSWR from 'swr';
 import DestinationCard from './DestinationCard';
+import LoadingSkeleton from './LoadingSkeleton';
+import ToastNotification from './ToastNotification';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const DestinationList = () => {
   const { data: destinations, error } = useSWR('/destinations', fetcher);
 
-  if (error) return <div>Error fetching destinations</div>;
-  if (!destinations) return <div>Loading...</div>;
+  if (error) return <ToastNotification message="Error fetching destinations" />;
+  if (!destinations) return <LoadingSkeleton />;
 
   return (
     <div className="container mx-auto p-4">
