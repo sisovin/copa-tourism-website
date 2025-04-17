@@ -24,20 +24,12 @@ export class AuthService {
     }
 
     const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { refreshToken },
-    });
-
-    return { accessToken, refreshToken };
-  }
-
-  async logout(userId: number) {
-    await prisma.user.update({
-      where: { id: userId },
       data: { refreshToken: null },
     });
+
+    return { accessToken };
   }
 }

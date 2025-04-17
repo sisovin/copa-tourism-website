@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import { register } from '../services/auth.service';
 
 const RegisterForm = ({ onRegisterSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
