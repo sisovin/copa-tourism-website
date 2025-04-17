@@ -15,26 +15,10 @@ export class DestinationController {
   }
 
   async getDestinationById(req: Request, res: Response) {
-    const { slug } = req.params;
+    const { id } = req.params;
 
     try {
-      const destination = await destinationService.getDestinationBySlug(slug);
-
-      if (!destination) {
-        return res.status(404).json(formatResponse('error', 'Destination not found'));
-      }
-
-      res.status(200).json(formatResponse('success', 'Destination fetched successfully', destination));
-    } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching destination', error));
-    }
-  }
-
-  async getDestinationBySlug(req: Request, res: Response) {
-    const { slug } = req.params;
-
-    try {
-      const destination = await destinationService.getDestinationBySlug(slug);
+      const destination = await destinationService.getDestinationById(Number(id));
 
       if (!destination) {
         return res.status(404).json(formatResponse('error', 'Destination not found'));

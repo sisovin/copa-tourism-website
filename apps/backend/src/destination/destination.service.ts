@@ -11,6 +11,10 @@ export class DestinationService {
     return await prisma.destination.findUnique({ where: { id } });
   }
 
+  async getDestinationBySlug(slug: string) {
+    return await prisma.destination.findUnique({ where: { slug } });
+  }
+
   async createDestination(data: { name: string; description?: string; location: string; userId: number }) {
     return await prisma.destination.create({ data });
   }
