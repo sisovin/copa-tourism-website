@@ -1,83 +1,66 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { formatResponse } from '../utils/responseFormat';
+import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
+import { BlogService } from './blog.service';
 
-const prisma = new PrismaClient();
-
+@Controller('blogs')
 export class BlogController {
-  async getAllBlogs(req: Request, res: Response) {
+  constructor(private readonly blogService: BlogService) {}
+
+  @Get()
+  async getAllBlogs(@Res() res) {
     try {
-      const blogs = await prisma.blog.findMany();
-      res.status(200).json(formatResponse('success', 'Blogs fetched successfully', blogs));
+      const blogs = await this.blogService.getAllBlogs();
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Blogs fetched successfully', data: blogs });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching blogs', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching blogs', error });
     }
   }
 
-  async getBlogBySlug(req: Request, res: Response) {
-    const { slug } = req.params;
-
+  @Get(':slug')
+  async getBlogBySlug(@Param('slug') slug: string, @Res() res) {
     try {
-      const blog = await prisma.blog.findUnique({ where: { slug } });
+      const blog = await this.blogService.getBlogBySlug(slug);
 
       if (!blog) {
-        return res.status(404).json(formatResponse('error', 'Blog not found'));
+        return res.status(HttpStatus.NOT_FOUND).json({ status: 'error', message: 'Blog not found' });
       }
 
-      res.status(200).json(formatResponse('success', 'Blog fetched successfully', blog));
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Blog fetched successfully', data: blog });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching blog', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching blog', error });
     }
   }
 
-  async createBlog(req: Request, res: Response) {
-    const { title, content, slug, published, authorId } = req.body;
+  @Post()
+  async createBlog(@Body() body: { title: string; content: string; slug: string; published: boolean; authorId: number }, @Res() res) {
+    const { title, content, slug, published, authorId } = body;
 
     try {
-      const blog = await prisma.blog.create({
-        data: {
-          title,
-          content,
-          slug,
-          published,
-          authorId,
-        },
-      });
-
-      res.status(201).json(formatResponse('success', 'Blog created successfully', blog));
+      const blog = await this.blogService.createBlog({ title, content, slug, published, authorId });
+      res.status(HttpStatus.CREATED).json({ status: 'success', message: 'Blog created successfully', data: blog });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error creating blog', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error creating blog', error });
     }
   }
 
-  async updateBlog(req: Request, res: Response) {
-    const { slug } = req.params;
-    const { title, content, published } = req.body;
+  @Put(':slug')
+  async updateBlog(@Param('slug') slug: string, @Body() body: { title?: string; content?: string; published?: boolean }, @Res() res) {
+    const { title, content, published } = body;
 
     try {
-      const blog = await prisma.blog.update({
-        where: { slug },
-        data: {
-          title,
-          content,
-          published,
-        },
-      });
-
-      res.status(200).json(formatResponse('success', 'Blog updated successfully', blog));
+      const blog = await this.blogService.updateBlog(slug, { title, content, published });
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Blog updated successfully', data: blog });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error updating blog', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error updating blog', error });
     }
   }
 
-  async deleteBlog(req: Request, res: Response) {
-    const { slug } = req.params;
-
+  @Delete(':slug')
+  async deleteBlog(@Param('slug') slug: string, @Res() res) {
     try {
-      await prisma.blog.delete({ where: { slug } });
-      res.status(200).json(formatResponse('success', 'Blog deleted successfully'));
+      await this.blogService.deleteBlog(slug);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Blog deleted successfully' });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error deleting blog', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error deleting blog', error });
     }
   }
 }

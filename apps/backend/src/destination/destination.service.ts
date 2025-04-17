@@ -1,29 +1,31 @@
-import { PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-const prisma = new PrismaClient();
-
+@Injectable()
 export class DestinationService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getAllDestinations() {
-    return await prisma.destination.findMany();
+    return await this.prisma.destination.findMany();
   }
 
   async getDestinationById(id: number) {
-    return await prisma.destination.findUnique({ where: { id } });
+    return await this.prisma.destination.findUnique({ where: { id } });
   }
 
   async getDestinationBySlug(slug: string) {
-    return await prisma.destination.findUnique({ where: { slug } });
+    return await this.prisma.destination.findUnique({ where: { slug } });
   }
 
   async createDestination(data: { name: string; description?: string; location: string; userId: number }) {
-    return await prisma.destination.create({ data });
+    return await this.prisma.destination.create({ data });
   }
 
   async updateDestination(id: number, data: { name?: string; description?: string; location?: string }) {
-    return await prisma.destination.update({ where: { id }, data });
+    return await this.prisma.destination.update({ where: { id }, data });
   }
 
   async deleteDestination(id: number) {
-    return await prisma.destination.delete({ where: { id } });
+    return await this.prisma.destination.delete({ where: { id } });
   }
 }
