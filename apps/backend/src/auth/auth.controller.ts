@@ -28,4 +28,16 @@ export class AuthController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error logging in', error });
     }
   }
+
+  @Post('refresh')
+  async refresh(@Body() body: { refreshToken: string }, @Res() res) {
+    const { refreshToken } = body;
+
+    try {
+      const { accessToken } = await this.authService.refreshToken(refreshToken);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Token refreshed successfully', data: { accessToken } });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error refreshing token', error });
+    }
+  }
 }
