@@ -1,25 +1,27 @@
-import { PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-const prisma = new PrismaClient();
-
+@Injectable()
 export class BlogService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getAllBlogs() {
-    return await prisma.blog.findMany();
+    return await this.prisma.blog.findMany();
   }
 
   async getBlogBySlug(slug: string) {
-    return await prisma.blog.findUnique({ where: { slug } });
+    return await this.prisma.blog.findUnique({ where: { slug } });
   }
 
   async createBlog(data: { title: string; content: string; slug: string; published: boolean; authorId: number }) {
-    return await prisma.blog.create({ data });
+    return await this.prisma.blog.create({ data });
   }
 
   async updateBlog(slug: string, data: { title?: string; content?: string; published?: boolean }) {
-    return await prisma.blog.update({ where: { slug }, data });
+    return await this.prisma.blog.update({ where: { slug }, data });
   }
 
   async deleteBlog(slug: string) {
-    return await prisma.blog.delete({ where: { slug } });
+    return await this.prisma.blog.delete({ where: { slug } });
   }
 }

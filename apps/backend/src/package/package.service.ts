@@ -1,25 +1,27 @@
-import { PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-const prisma = new PrismaClient();
-
+@Injectable()
 export class PackageService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getAllPackages() {
-    return await prisma.package.findMany();
+    return await this.prisma.package.findMany();
   }
 
   async getPackageById(id: number) {
-    return await prisma.package.findUnique({ where: { id } });
+    return await this.prisma.package.findUnique({ where: { id } });
   }
 
   async createPackage(data: { name: string; description?: string; price: number; destinationId: number }) {
-    return await prisma.package.create({ data });
+    return await this.prisma.package.create({ data });
   }
 
   async updatePackage(id: number, data: { name?: string; description?: string; price?: number; destinationId?: number }) {
-    return await prisma.package.update({ where: { id }, data });
+    return await this.prisma.package.update({ where: { id }, data });
   }
 
   async deletePackage(id: number) {
-    return await prisma.package.delete({ where: { id } });
+    return await this.prisma.package.delete({ where: { id } });
   }
 }

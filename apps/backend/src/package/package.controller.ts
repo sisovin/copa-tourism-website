@@ -1,90 +1,76 @@
-import { Request, Response } from 'express';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, HttpStatus } from '@nestjs/common';
 import { PackageService } from './package.service';
-import { formatResponse } from '../utils/responseFormat';
 
-const packageService = new PackageService();
-
+@Controller('packages')
 export class PackageController {
-  async getAllPackages(req: Request, res: Response) {
+  constructor(private readonly packageService: PackageService) {}
+
+  @Get()
+  async getAllPackages(@Res() res) {
     try {
-      const packages = await packageService.getAllPackages();
-      res.status(200).json(formatResponse('success', 'Packages fetched successfully', packages));
+      const packages = await this.packageService.getAllPackages();
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Packages fetched successfully', data: packages });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching packages', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching packages', error });
     }
   }
 
-  async getPackageById(req: Request, res: Response) {
-    const { id } = req.params;
-
+  @Get(':id')
+  async getPackageById(@Param('id') id: number, @Res() res) {
     try {
-      const package = await packageService.getPackageById(Number(id));
+      const package = await this.packageService.getPackageById(id);
 
       if (!package) {
-        return res.status(404).json(formatResponse('error', 'Package not found'));
+        return res.status(HttpStatus.NOT_FOUND).json({ status: 'error', message: 'Package not found' });
       }
 
-      res.status(200).json(formatResponse('success', 'Package fetched successfully', package));
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Package fetched successfully', data: package });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching package', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching package', error });
     }
   }
 
-  async createPackage(req: Request, res: Response) {
-    const { name, description, price, destinationId } = req.body;
+  @Post()
+  async createPackage(@Body() body: { name: string; description?: string; price: number; destinationId: number }, @Res() res) {
+    const { name, description, price, destinationId } = body;
 
     try {
-      const package = await packageService.createPackage({
-        name,
-        description,
-        price,
-        destinationId,
-      });
-
-      res.status(201).json(formatResponse('success', 'Package created successfully', package));
+      const package = await this.packageService.createPackage({ name, description, price, destinationId });
+      res.status(HttpStatus.CREATED).json({ status: 'success', message: 'Package created successfully', data: package });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error creating package', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error creating package', error });
     }
   }
 
-  async updatePackage(req: Request, res: Response) {
-    const { id } = req.params;
-    const { name, description, price, destinationId } = req.body;
+  @Put(':id')
+  async updatePackage(@Param('id') id: number, @Body() body: { name?: string; description?: string; price?: number }, @Res() res) {
+    const { name, description, price } = body;
 
     try {
-      const package = await packageService.updatePackage(Number(id), {
-        name,
-        description,
-        price,
-        destinationId,
-      });
-
-      res.status(200).json(formatResponse('success', 'Package updated successfully', package));
+      const package = await this.packageService.updatePackage(id, { name, description, price });
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Package updated successfully', data: package });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error updating package', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error updating package', error });
     }
   }
 
-  async deletePackage(req: Request, res: Response) {
-    const { id } = req.params;
-
+  @Delete(':id')
+  async deletePackage(@Param('id') id: number, @Res() res) {
     try {
-      await packageService.deletePackage(Number(id));
-      res.status(200).json(formatResponse('success', 'Package deleted successfully'));
+      await this.packageService.deletePackage(id);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Package deleted successfully' });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error deleting package', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error deleting package', error });
     }
   }
 
-  async searchPackages(req: Request, res: Response) {
-    const { query } = req.query;
-
+  @Get('search')
+  async searchPackages(@Query('query') query: string, @Res() res) {
     try {
-      const packages = await packageService.searchPackages(query);
-
-      res.status(200).json(formatResponse('success', 'Packages fetched successfully', packages));
+      const packages = await this.packageService.searchPackages(query);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Packages fetched successfully', data: packages });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching packages', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching packages', error });
     }
   }
 }

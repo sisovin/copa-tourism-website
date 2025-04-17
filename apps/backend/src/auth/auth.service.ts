@@ -1,13 +1,18 @@
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
-const prisma = new PrismaClient();
-
+@Injectable()
 export class AuthService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
   async register(email: string, password: string) {
     const hashedPassword = await argon2.hash(password);
-    const user = await prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -17,15 +22,15 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user || !(await argon2.verify(user.password, password))) {
       throw new Error('Invalid email or password');
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign({ userId: user.id }, { expiresIn: '15m' });
 
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: null },
     });

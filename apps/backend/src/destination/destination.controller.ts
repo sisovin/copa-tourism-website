@@ -1,89 +1,76 @@
-import { Request, Response } from 'express';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, HttpStatus } from '@nestjs/common';
 import { DestinationService } from './destination.service';
-import { formatResponse } from '../utils/responseFormat';
 
-const destinationService = new DestinationService();
-
+@Controller('destinations')
 export class DestinationController {
-  async getAllDestinations(req: Request, res: Response) {
+  constructor(private readonly destinationService: DestinationService) {}
+
+  @Get()
+  async getAllDestinations(@Res() res) {
     try {
-      const destinations = await destinationService.getAllDestinations();
-      res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
+      const destinations = await this.destinationService.getAllDestinations();
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Destinations fetched successfully', data: destinations });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching destinations', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching destinations', error });
     }
   }
 
-  async getDestinationById(req: Request, res: Response) {
-    const { id } = req.params;
-
+  @Get(':id')
+  async getDestinationById(@Param('id') id: number, @Res() res) {
     try {
-      const destination = await destinationService.getDestinationById(Number(id));
+      const destination = await this.destinationService.getDestinationById(id);
 
       if (!destination) {
-        return res.status(404).json(formatResponse('error', 'Destination not found'));
+        return res.status(HttpStatus.NOT_FOUND).json({ status: 'error', message: 'Destination not found' });
       }
 
-      res.status(200).json(formatResponse('success', 'Destination fetched successfully', destination));
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Destination fetched successfully', data: destination });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching destination', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching destination', error });
     }
   }
 
-  async createDestination(req: Request, res: Response) {
-    const { name, description, location, userId } = req.body;
+  @Post()
+  async createDestination(@Body() body: { name: string; description?: string; location: string; userId: number }, @Res() res) {
+    const { name, description, location, userId } = body;
 
     try {
-      const destination = await destinationService.createDestination({
-        name,
-        description,
-        location,
-        userId,
-      });
-
-      res.status(201).json(formatResponse('success', 'Destination created successfully', destination));
+      const destination = await this.destinationService.createDestination({ name, description, location, userId });
+      res.status(HttpStatus.CREATED).json({ status: 'success', message: 'Destination created successfully', data: destination });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error creating destination', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error creating destination', error });
     }
   }
 
-  async updateDestination(req: Request, res: Response) {
-    const { id } = req.params;
-    const { name, description, location } = req.body;
+  @Put(':id')
+  async updateDestination(@Param('id') id: number, @Body() body: { name?: string; description?: string; location?: string }, @Res() res) {
+    const { name, description, location } = body;
 
     try {
-      const destination = await destinationService.updateDestination(Number(id), {
-        name,
-        description,
-        location,
-      });
-
-      res.status(200).json(formatResponse('success', 'Destination updated successfully', destination));
+      const destination = await this.destinationService.updateDestination(id, { name, description, location });
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Destination updated successfully', data: destination });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error updating destination', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error updating destination', error });
     }
   }
 
-  async deleteDestination(req: Request, res: Response) {
-    const { id } = req.params;
-
+  @Delete(':id')
+  async deleteDestination(@Param('id') id: number, @Res() res) {
     try {
-      await destinationService.deleteDestination(Number(id));
-      res.status(200).json(formatResponse('success', 'Destination deleted successfully'));
+      await this.destinationService.deleteDestination(id);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Destination deleted successfully' });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error deleting destination', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error deleting destination', error });
     }
   }
 
-  async searchDestinations(req: Request, res: Response) {
-    const { query } = req.query;
-
+  @Get('search')
+  async searchDestinations(@Query('query') query: string, @Res() res) {
     try {
-      const destinations = await destinationService.searchDestinations(query);
-
-      res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
+      const destinations = await this.destinationService.searchDestinations(query);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Destinations fetched successfully', data: destinations });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error fetching destinations', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error fetching destinations', error });
     }
   }
 }

@@ -1,29 +1,31 @@
-import { Request, Response } from 'express';
+import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { formatResponse } from '../utils/responseFormat';
 
-const authService = new AuthService();
-
+@Controller('auth')
 export class AuthController {
-  async register(req: Request, res: Response) {
-    const { email, password } = req.body;
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() body: { email: string; password: string }, @Res() res) {
+    const { email, password } = body;
 
     try {
-      const user = await authService.register(email, password);
-      res.status(201).json(formatResponse('success', 'User registered successfully', user));
+      const user = await this.authService.register(email, password);
+      res.status(HttpStatus.CREATED).json({ status: 'success', message: 'User registered successfully', data: user });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error registering user', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error registering user', error });
     }
   }
 
-  async login(req: Request, res: Response) {
-    const { email, password } = req.body;
+  @Post('login')
+  async login(@Body() body: { email: string; password: string }, @Res() res) {
+    const { email, password } = body;
 
     try {
-      const { accessToken } = await authService.login(email, password);
-      res.status(200).json(formatResponse('success', 'Login successful', { accessToken }));
+      const { accessToken } = await this.authService.login(email, password);
+      res.status(HttpStatus.OK).json({ status: 'success', message: 'Login successful', data: { accessToken } });
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error logging in', error));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error logging in', error });
     }
   }
 }
