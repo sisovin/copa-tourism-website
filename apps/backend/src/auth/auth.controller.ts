@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
 import { PrismaClient } from '@prisma/client';
-import { signToken, verifyToken } from '../utils/jwt';
+import { signToken } from '../utils/jwt';
 import { formatResponse } from '../utils/responseFormat';
 
 const prisma = new PrismaClient();
@@ -36,31 +36,15 @@ export class AuthController {
       }
 
       const accessToken = signToken({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
-      const refreshToken = signToken({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
       await prisma.user.update({
         where: { id: user.id },
-        data: { refreshToken },
-      });
-
-      res.status(200).json(formatResponse('success', 'Login successful', { accessToken, refreshToken }));
-    } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error logging in', error));
-    }
-  }
-
-  async logout(req: Request, res: Response) {
-    const { userId } = req.body;
-
-    try {
-      await prisma.user.update({
-        where: { id: userId },
         data: { refreshToken: null },
       });
 
-      res.status(200).json(formatResponse('success', 'User logged out successfully'));
+      res.status(200).json(formatResponse('success', 'Login successful', { accessToken }));
     } catch (error) {
-      res.status(500).json(formatResponse('error', 'Error logging out', error));
+      res.status(500).json(formatResponse('error', 'Error logging in', error));
     }
   }
 }
