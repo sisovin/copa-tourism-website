@@ -9,7 +9,15 @@
     "start:backend": "node apps/backend/src/index.js",
     "start:frontend": "serve -s apps/frontend/src",
     "prisma:migrate": "prisma migrate dev",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "start:backend": "npm run start --workspace=backend",
+    "start:frontend": "npm run start --workspace=frontend",
+    "lint:backend": "npm run lint --workspace=backend",
+    "lint:frontend": "npm run lint --workspace=frontend",
+    "test:backend": "npm run test --workspace=backend",
+    "test:frontend": "npm run test --workspace=frontend"
   },
   "dependencies": {
     "express": "^4.17.1",
