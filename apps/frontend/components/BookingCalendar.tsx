@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
+import { Calendar } from '@copa/ui';
 
 const BookingCalendar = ({ onDatesChange }) => {
   const [startDate, setStartDate] = useState(null);
