@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { DestinationService } from './destination.service';
 import { formatResponse } from '../utils/responseFormat';
 
-const prisma = new PrismaClient();
+const destinationService = new DestinationService();
 
 export class DestinationController {
   async getAllDestinations(req: Request, res: Response) {
     try {
-      const destinations = await prisma.destination.findMany();
+      const destinations = await destinationService.getAllDestinations();
       res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
     } catch (error) {
       res.status(500).json(formatResponse('error', 'Error fetching destinations', error));
@@ -18,7 +18,7 @@ export class DestinationController {
     const { slug } = req.params;
 
     try {
-      const destination = await prisma.destination.findUnique({ where: { slug } });
+      const destination = await destinationService.getDestinationBySlug(slug);
 
       if (!destination) {
         return res.status(404).json(formatResponse('error', 'Destination not found'));
@@ -34,7 +34,7 @@ export class DestinationController {
     const { slug } = req.params;
 
     try {
-      const destination = await prisma.destination.findUnique({ where: { slug } });
+      const destination = await destinationService.getDestinationBySlug(slug);
 
       if (!destination) {
         return res.status(404).json(formatResponse('error', 'Destination not found'));
@@ -50,13 +50,11 @@ export class DestinationController {
     const { name, description, location, userId } = req.body;
 
     try {
-      const destination = await prisma.destination.create({
-        data: {
-          name,
-          description,
-          location,
-          userId,
-        },
+      const destination = await destinationService.createDestination({
+        name,
+        description,
+        location,
+        userId,
       });
 
       res.status(201).json(formatResponse('success', 'Destination created successfully', destination));
@@ -70,13 +68,10 @@ export class DestinationController {
     const { name, description, location } = req.body;
 
     try {
-      const destination = await prisma.destination.update({
-        where: { id: Number(id) },
-        data: {
-          name,
-          description,
-          location,
-        },
+      const destination = await destinationService.updateDestination(Number(id), {
+        name,
+        description,
+        location,
       });
 
       res.status(200).json(formatResponse('success', 'Destination updated successfully', destination));
@@ -89,7 +84,7 @@ export class DestinationController {
     const { id } = req.params;
 
     try {
-      await prisma.destination.delete({ where: { id: Number(id) } });
+      await destinationService.deleteDestination(Number(id));
       res.status(200).json(formatResponse('success', 'Destination deleted successfully'));
     } catch (error) {
       res.status(500).json(formatResponse('error', 'Error deleting destination', error));
@@ -100,15 +95,7 @@ export class DestinationController {
     const { query } = req.query;
 
     try {
-      const destinations = await prisma.destination.findMany({
-        where: {
-          OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { description: { contains: query, mode: 'insensitive' } },
-            { location: { contains: query, mode: 'insensitive' } },
-          ],
-        },
-      });
+      const destinations = await destinationService.searchDestinations(query);
 
       res.status(200).json(formatResponse('success', 'Destinations fetched successfully', destinations));
     } catch (error) {
