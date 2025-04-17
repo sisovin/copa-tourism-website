@@ -28,3 +28,12 @@ export const logout = async (userId) => {
     throw new Error(error.response.data.message || 'Error logging out');
   }
 };
+
+export const refreshToken = async (refreshToken) => {
+  try {
+    const response = await axios.post(`${API_URL}/refresh-token`, { refreshToken });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Error refreshing token');
+  }
+};

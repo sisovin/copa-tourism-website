@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getToken, setToken, removeToken } from '../utils/auth';
+import { login as authLogin, logout as authLogout } from '../services/auth.service';
 
 const AuthContext = createContext();
 
@@ -17,19 +18,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid email or password');
-      }
-
-      const data = await response.json();
+      const data = await authLogin(email, password);
       setToken(data.accessToken);
       setUser({ token: data.accessToken });
       router.push('/');
@@ -38,10 +27,15 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    removeToken();
-    setUser(null);
-    router.push('/login');
+  const logout = async () => {
+    try {
+      await authLogout();
+      removeToken();
+      setUser(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const isAuthenticated = () => {

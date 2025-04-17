@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { register } from '../services/auth.service';
 
 const RegisterForm = ({ onRegisterSuccess }) => {
   const [email, setEmail] = useState('');
@@ -12,18 +13,7 @@ const RegisterForm = ({ onRegisterSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch('/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-
+      await register(email, password);
       onRegisterSuccess();
     } catch (error) {
       setError(error.message);

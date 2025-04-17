@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { login } from '../services/auth.service';
 
 const LoginForm = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -12,19 +13,7 @@ const LoginForm = ({ onLoginSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch('/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid email or password');
-      }
-
-      const data = await response.json();
+      const data = await login(email, password);
       localStorage.setItem('token', data.accessToken);
       onLoginSuccess();
     } catch (error) {
