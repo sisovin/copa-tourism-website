@@ -1,35 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import useSWR from 'swr';
 import DestinationCard from './DestinationCard';
 
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
 const DestinationList = () => {
-  const [destinations, setDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: destinations, error } = useSWR('/destinations', fetcher);
 
-  useEffect(() => {
-    const fetchDestinations = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('/destinations');
-        const data = await response.json();
-        setDestinations(data);
-      } catch (error) {
-        setError('Error fetching destinations');
-        console.error('Error fetching destinations:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDestinations();
-  }, []);
+  if (error) return <div>Error fetching destinations</div>;
+  if (!destinations) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Destinations</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {destinations.map((destination) => (
           <DestinationCard key={destination.id} name={destination.name} description={destination.description} location={destination.location} />
